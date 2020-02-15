@@ -63,6 +63,7 @@
         titlepage = true, abstract = true}
 \usepackage{newtxtext}%\usepackage{palatino}
 \usepackage{lipsum}
+
 \title{The Known Name}
 \author{Team 2007379}
 \date{\today}
@@ -99,12 +100,128 @@ However, it seems that there are few researchers ever explore the valuation mode
 
 The management of the plastic waste is one of the most controversial topic in the discussion on integrated municipal solid waste area.
 
+\subsection{Contributions}
+
+\section{Maximum levels of single-use or disposable plastic product}
+
+\section{To what extent plastic waste can be reduced}
+
+\label{p2}
+
+At present, the global use of plastics has exceeded the upper limit of environmental tolerance, which poses a huge threat to the ecological environment. In section \ref{p2}, We propose a model of Happiness based on SVR\cite{Smola}, which we call HSVR. Using HHSVR, we will explore the impact of the use of plastic on human living standards, and try to reduce the amount of plastic used as much as possible without affecting much of human living standards.
+
+Our starting point is straightforward: the use of plastic is essential, and reducing the use of plastic will inevitably affect the living standards of local people. By analyzing the characteristics of different regions (especially the amount of plastics produced) and the people's living standards, we find out the relationship between the amount of plastics produced and the people's happiness index. Based on this, we can analyze how much plastic production we can reduce without significantly reducing the happiness index.
+
+The following of this section will first briefly introduce the method we use, and then obtain a specific regression model based on the Global Happiness Report\cite{World} and plastic production in each region\cite{Plastic}.
+
+\subsection{SVR algorithm}
+
+Support vector regression(SVR) is an application of SVM (support vector machine) to regression problems. Support vector machines construct a hyperplane or a series of hyperplanes in a high-dimensional or infinite-dimensional space, which can be used for classification, regression, or other tasks. Intuitively, using a hyperplane to achieve a good segmentation can make the closest training data points have the largest separation distance in any category. This is because usually a larger margin can have a lower generalization error of classifier\cite{SVRs}.
+
+Given training vectors $x_i \in R^p, i = 1, \cdots, n$, and a vector $y \in R^n$. $\varepsilon-SVR$ solves the following primal problem:
+
+\begin{equation}
+\min_{\omega,b,\zeta,\zeta^*}\frac{1}{2}\omega^T\omega + C \sum_{i = 1}^n(\zeta_i + \zeta_i^*) 
+\label{primal}
+\end{equation}
+
+subject to 
+
+\begin{equation}
+y_i - \omega^T\phi(x_i) - b \le\varepsilon + \zeta_i
+\label{sub1}
+\end{equation}
+
+\begin{equation}
+\omega^T\phi(x_i) + b - y_i \le\varepsilon + \zeta_i^*
+\label{sub2}
+\end{equation}
+
+where $\zeta_i, \zeta_i^* \ge 0, i = 1, \cdots, n$.
+
+Its dual is
+
+\begin{equation}
+\min_{\alpha,\alpha^*}\frac{1}{2}(\alpha-\alpha^*) + \varepsilon e^T(\alpha + \alpha^*) - y^T(\alpha-\alpha^*)
+\label{dual}
+\end{equation}
+
+subject to 
+
+\begin{equation}
+e^T(\alpha - \alpha^*) = 0
+\label{sub4}
+\end{equation}
+
+where $0 \le \alpha_i, \alpha_i^* \le C, i = 1, \cdots, n$, $e$ is the vector of all ones, $C > 0$ is the upper bound, $Q$ is an $n$ by $n$ positive semidefinite matrix, $Q_{ij} \equiv K(x_i, x_j) = {\phi(x_i)}^T\phi(x_j)$ is the kernel. Here training vectors are implicitly mapped into a higher (maybe infinite) dimensional space by the function $\phi$. $\phi$ can be linear, polynomial, sigmoid or others.
+
+The decision function is:
+
+\begin{equation}
+\sum_{i = 1}^{n}(\alpha_i - \alpha_i^*)K(x_i,x) + \rho
+\label{decision}
+\end{equation}
+
+For more details, please refer to \cite{Smola}.
+
+\subsection{Detailed analysis}
+
+In this section, we will introduce the quantitative standard of happiness, analyze this problem, and use SVR to get the function of happiness and plastic production $\hat{f}$ so that $\hat{f}: X \mapsto y$, where $X$ is a vector in $\mathcal{X} = \mathcal{R}^d$, including a dimension of plastic production.
+
+\subsubsection{The quantitative standard of happiness}
+
+We use the happiness quantification standard used by the World Happiness Report\cite{World}, where the happiness scores and rankings use data from the Gallup World Poll. The scores are based on answers to the main life evaluation question asked in the poll. This question, known as the Cantril ladder, asks respondents to think of a ladder with the best possible life for them being a 10 and the worst possible life being a 0 and to rate their own current lives on that scale. The scores are from nationally representative samples for the years 2013-2016 and use the Gallup weights to make the estimates representative. 
+
+Obviously, people's happiness depends not only on the amount of plastic produced. In fact, plastic production and waste account for only a small part of the factors affecting people's happiness. There are six factors usually concerned to be relevant to happiness: economic production, social support, life expectancy, freedom, absence of corruption, and generosity. The data that estimates the extent to which each of six factors contribute to making life evaluations higher in each country than they are in Dystopia, a hypothetical country that has values equal to the world’s lowest national averages for each of the six factors, is also used to as part of the input of HSVR, with some preprocessing:
+
+\begin{equation}
+x^* = \frac{x - x_{min}}{x_{max} - x_{min}}
+\label{toone}
+\end{equation}
+
+where $x_max,x_min$ is the maximum and minimum of the original data, respectively. And
+
+\begin{equation}
+\check{x} = \frac{x - \mu}{\sigma}
+\end{equation}
+
+where $\mu$ and $\sigma$ is mean and standard deviation of the original data, respectively.
+
+Note that the first preprocessing maps the data to $[0,1]$ and the second preprocessing scales individual samples to have unit norm. These two preprocessing steps will erase the differences between the data formats and make the characteristics of the data more obvious.
+
+\subsubsection{Plastic Emphasized}
+
+The impact of the production and use of plastic on happiness should be far less than that of the other six factors mentioned above, which means that the input to the problem should be a weighting of all seven factors:
+
+\begin{equation}
+X = (\epsilon_1 x_1, \epsilon_2 x_2, \epsilon_3 x_3, \epsilon_4 x_4, \epsilon_5 x_5, \epsilon_6 x_6, \epsilon_7 x_7)
+\end{equation}
+
+However, what we need to find is mainly the relationship between plastic production and happiness, so we give plastic production a sufficiently high weight, where $\epsilon_i = 1, i = 1, \cdots, n$.
+
+The lack of data\cite{lack} in research on plastic production and consumption has always been a serious problem. To the best of our knowledge, there are no specific statistics on the amount of plastic used in many regions, especially in developing countries. This means that our research will face problems of insufficient data volume and potential data imbalances. Based on this, we chose SVR as our classifier, because SVR has the following characteristics\cite{SVRs} and is suitable for solving this problem:
+
+\begin{itemize}
+	\item Effective in high dimensional spaces.
+	\item Still effective in cases where number of dimensions is greater than the number of samples.
+	\item Versatile: different Kernel functions can be specified for the decision function.
+\end{itemize}
+
+
+
 \begin{thebibliography}{99}
 \bibitem{Geyer} Geyer, Roland, Jenna R. Jambeck, and Kara Lavender Law. "Production, use, and fate of all plastics ever made." Science advances 3.7 (2017): e1700782.
 \bibitem{Giacovelli} Giacovelli, Claudia. "Single-Use Plastics: A Roadmap for Sustainability." (2018).
 \bibitem{LI}LI, Wai Chin, H. F. Tse, and Lincoln Fok. "Plastic waste in the marine environment: A review of sources, occurrence and effects." Science of the Total Environment 566 (2016): 333-349.
 \bibitem{Rigamonti}Rigamonti, Lucia, et al. "Environmental evaluation of plastic waste management scenarios." Resources, Conservation and Recycling 85 (2014): 42-53.
 \bibitem{Kirkeby}Kirkeby, Janus T., et al. "Environmental assessment of solid waste systems and technologies: EASEWASTE." Waste Management \& Research 24.1 (2006): 3-15.
+\bibitem{Smola}Smola, Alex J., and Bernhard Schölkopf. "A tutorial on support vector regression." Statistics and computing 14.3 (2004): 199-222.
+\bibitem{World}World Happiness Report. https://kaggle.com/unsdsn/world-happiness. Accessed 15 Feb. 2020.
+\bibitem{Plastic}“Plastic Industry Worldwide.” Statista, https://0-www-statista-com.lib.rivier.edu/study/51465/global-plastics-industry/. Accessed 15 Feb. 2020.
+\bibitem{SVRs}1.4. Support Vector Machines — Scikit-Learn 0.22.1 Documentation. https://scikit-learn.org/stable/modules/svm.html. Accessed 15 Feb. 2020.
+\bibitem{lack}Groot, Jim, et al. "A comprehensive waste collection cost model applied to post-consumer plastic packaging waste." Resources, Conservation and Recycling 85 (2014): 79-87.
+
+
 \end{thebibliography}
 
 
