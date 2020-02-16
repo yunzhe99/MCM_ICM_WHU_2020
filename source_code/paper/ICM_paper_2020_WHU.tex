@@ -354,7 +354,7 @@ The lack of data\cite{lack} in research on plastic production and consumption ha
 \end{itemize}
 
 \subsection{Model parameter selection}
-
+\label{train}
 We randomly selected 20 countries from \cite{World} and \cite{Plastic} as our training set as our training set. These countries include countries that consume more plastic, such as China and India, and developed countries, such as the United States and the United Kingdom. In combination with the training situation, we adjusted the model in real time to obtain the optimal model.
 
 \subsubsection{Model performance evaluation}
@@ -396,7 +396,43 @@ As can be seen from the figure, the results of linear and rbf are much better th
 
 \subsection{Predict minimum plastic usage in an area}
 
-We can change the amount of plastic used and predict repeatedly to get the relationship between the amount of plastic used and happiness. For example, figure \ref{fig2} shows this relationship in the US.
+From the above analysis, we find that the linear kernel function has the best fitting effect, indicating that the plastic consumption has a linear relationship with the living standard. This is consistent with per capita plastic consumption in different regions. Table \ref{consumption} is a table of plastic consumption in different regions. Intuitively, the consumption of plastic is positively related to the living standard of the region. Developed regions generally have higher plastic consumption. Of course, this is also related to other factors. These are reflected in our model.
+
+\begin{table}[]
+	\center
+	
+	\caption{Plastic consumption in different regions}
+	\begin{tabular}{|c|c|}
+		\hline
+		\textbf{Area}              & \textbf{\begin{tabular}[c]{@{}c@{}}Plastic consumption\\ (1 ton per 100,000 people)\end{tabular}} \\ \hline
+		China                      & 1316.1                                                                                            \\ \hline
+		North America              & 1571.9                                                                                            \\ \hline
+		Asia Pacific               & 657.1                                                                                             \\ \hline
+		Western Europe             & 2870.6                                                                                            \\ \hline
+		India                      & 251.9                                                                                             \\ \hline
+		Middle East                & 580.4                                                                                             \\ \hline
+		Central and South America  & 308.8                                                                                             \\ \hline
+		Central and Eastern Europe & 1468.4                                                                                            \\ \hline
+		Africa                     & 99.8                                                                                              \\ \hline
+		Japan                      & 812.9                                                                                             
+		\label{consumption}
+		\\ \hline
+	\end{tabular}
+\end{table}
+
+Based on this conclusion, we found that reducing the amount of plastic used will inevitably affect people's happiness. Therefore, we need to make a compromise between happiness and environment. This is undoubtedly a very painful thing. Therefore, we need to find a threshold on the tolerance of the regions $\kappa$. $\kappa$ is such a value: in a specific area, if happiness $\Gamma = \hat{f}(X) < \kappa$, it is not worthwhile to reduce consumption. Note that $\hat{f}$ is trained in section \ref{train}. $\kappa$ can be derived from historical data and is closely related to each place.
+
+Unfortunately, many people are unwilling to pay a lot for environmental protection\cite{unf}, as is shown in figure \ref{fig3}. So we carefully set this value to 1\% of the existing happiness index.
+
+\begin{figure}[!htb] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
+	\centering %图片居中
+	\includegraphics[width=0.7\textwidth]{figures/en.PNG} %插入图片，[]中设置图片大小，{}中是图片文件名
+	\caption{Happiness-Plastic curve of US.} %最终文档中希望显示的图片标题
+	\label{fig3} %用于文内引用的标签
+	
+\end{figure}
+
+For example, figure \ref{fig2} shows this relationship in the US. Currently, plastic consumption in the United States is 1571.9 tons per 100,000 people. If America's tolerance for happiness is 7.263, then the minimum plastic consumption in the United States should be 500 tons per 100,000 people. If plastics production is required to fall below this limit, it will cause more problems and outweigh the benefits.
 
 \begin{figure}[!htb] %H为当前位置，!htb为忽略美学标准，htbp为浮动图形
 	\centering %图片居中
@@ -406,9 +442,9 @@ We can change the amount of plastic used and predict repeatedly to get the relat
 	
 \end{figure}
 
-We can see from figure \ref{fig2} that using too little plastic can seriously affect people's happiness. Therefore, we can set a threshold to get the smallest amount of plastic that can be used in an area.
+%We can see from figure \ref{fig2} that using too little plastic can seriously affect people's happiness. Therefore, we can set a threshold to get the smallest amount of plastic that can be used in an area.
 
-Our solution to this problem is based on the assumption that people will not lead a very difficult life for the reduction of plastic. Based on this, each region has its own minimum tolerable quality of life. By bringing this data into the classifier, we can get the results.
+%Our solution to this problem is based on the assumption that people will not lead a very difficult life for the reduction of plastic. Based on this, each region has its own minimum tolerable quality of life. By bringing this data into the classifier, we can get the results.
 
 \begin{thebibliography}{99}
 \bibitem{Geyer} Geyer, Roland, Jenna R. Jambeck, and Kara Lavender Law. "Production, use, and fate of all plastics ever made." Science advances 3.7 (2017): e1700782.
@@ -424,6 +460,8 @@ Our solution to this problem is based on the assumption that people will not lea
 \bibitem{book}Andrady, Anthony L., ed. Plastics and the Environment. John Wiley \& Sons, 2003.
 \bibitem{kf}“Cross-Validation (Statistics).” Wikipedia, 7 Feb. 2020. Wikipedia, https://en.wikipedia.org/w/index.php?title=Cross-validation\_(statistics)\&oldid=939673086.
 \bibitem{McLachlan}McLachlan, Geoffrey J., Kim-Anh Do, and Christophe Ambroise. Analyzing microarray gene expression data. Vol. 422. John Wiley \& Sons, 2005.
+\bibitem{unf}Arpad, Todor. “Willing to Pay to Save the Planet? Evaluating Support for Increased Spending on Sustainable Development and Environmentally Friendly Policies in Five Countries.” PLOS ONE, vol. 13, no. 11, Nov. 2018, p. e0207862. PLoS Journals, doi:10.1371/journal.pone.0207862.
+
 
 \end{thebibliography}
 
